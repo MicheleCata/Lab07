@@ -6,7 +6,12 @@ public class TestModel {
 		
 		Model model = new Model();
 		System.out.println(model.getNercList());
-
+		
+		System.out.println(model.powerList("MAAC"));
+		
+		
+		
+		
 	}
 
 }

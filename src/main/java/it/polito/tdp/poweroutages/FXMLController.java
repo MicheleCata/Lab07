@@ -5,9 +5,11 @@
 package it.polito.tdp.poweroutages;
 
 import java.net.URL;
+import java.util.List;
 import java.util.ResourceBundle;
 import it.polito.tdp.poweroutages.model.Model;
 import it.polito.tdp.poweroutages.model.Nerc;
+import it.polito.tdp.poweroutages.model.PowerOutage;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.scene.control.ComboBox;
@@ -39,6 +41,17 @@ public class FXMLController {
     @FXML
     void doRun(ActionEvent event) {
     	txtResult.clear();
+    	Integer years = Integer.parseInt(txtYears.getText());
+    	if (years>14 || years<0)
+    		txtResult.setText("intervallo max di anni pari a 14");
+    	Integer ore = Integer.parseInt(txtHours.getText());
+    	
+    	List<PowerOutage> listaP = model.trovaSequenza(years, ore, cmbNerc.getValue().getValue());
+    	
+    	for (PowerOutage p: listaP) {
+    		
+    		txtResult.appendText(p.toString()+"\n");
+    	}
     }
 
     @FXML // This method is called by the FXMLLoader when initialization is complete
@@ -54,5 +67,9 @@ public class FXMLController {
     
     public void setModel(Model model) {
     	this.model = model;
+    	
+    	List<Nerc> listaNerc = model.getNercList();
+    	
+    	cmbNerc.getItems().addAll(listaNerc);
     }
 }
