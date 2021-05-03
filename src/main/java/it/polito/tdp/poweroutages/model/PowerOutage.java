@@ -66,7 +66,7 @@ public class PowerOutage {
 	}
 	
 	public String toString() {
-		return this.id+ " ";
+		return this.id+ " "+ this.getOreDisservizio();
 	}
 
 	@Override

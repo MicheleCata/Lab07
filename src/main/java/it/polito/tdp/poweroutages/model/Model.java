@@ -11,6 +11,9 @@ public class Model {
 	
 	private PowerOutageDAO podao;
 	private List<PowerOutage> sequenzaMigliore;
+	private List<PowerOutage> partenza;
+	
+	int totPersone;
 	
 	public Model() {
 		podao = new PowerOutageDAO();
@@ -28,9 +31,11 @@ public class Model {
 	public List<PowerOutage> trovaSequenza (int anni, int ore,String nomeNerc) {
 		
 		List<PowerOutage> parziale = new ArrayList<>();
+		partenza = this.powerList(nomeNerc);
+		Collections.sort(partenza, new ComparatoreParziale());
 		sequenzaMigliore = null;
-		
-		cerca(parziale,0,anni,ore,nomeNerc);
+		totPersone =0;
+		cerca(parziale,anni,ore);
 		
 		return sequenzaMigliore;
 		
@@ -44,17 +49,20 @@ public class Model {
 		}
 	}
 	
-	private void cerca (List<PowerOutage> parziale, int livello,int anni, int ore, String nomeNerc) {
+	private void cerca (List<PowerOutage> parziale,int anni, int ore) {
 		
-		Integer totPersone = calcolaTot(parziale);
-		if (sequenzaMigliore==null || totPersone>calcolaTot(sequenzaMigliore)) 
-			sequenzaMigliore= new ArrayList<>(parziale);
-		else {
-			for (PowerOutage prova: podao.getPowerForNerc(nomeNerc)) {
-				if (aggiungi(prova,parziale,anni,ore))
-					parziale.add(prova);
-					cerca(parziale,livello+1,anni,ore,nomeNerc);
-					parziale.remove(parziale.size()-1);
+		if (calcolaTot(parziale)>totPersone) {
+			totPersone=calcolaTot(parziale);
+			sequenzaMigliore = new ArrayList<>(parziale);
+		}
+		
+		for (PowerOutage prova: partenza) {
+			if (!parziale.contains(prova)) {
+				parziale.add(prova);
+			if (aggiungi(parziale,anni,ore)) {
+					cerca(parziale,anni,ore);
+				}
+				parziale.remove(parziale.size()-1);
 			}
 			
 		}
@@ -69,13 +77,14 @@ public class Model {
 		return sum;
 	}
 
-	private boolean aggiungi (PowerOutage prova,List<PowerOutage> parziale, int anni, int ore) {
+	private boolean aggiungi (List<PowerOutage> parziale, int anni, int ore) {
 		int sum=0;
-		Collections.sort(parziale, new ComparatoreParziale());
-		if ((parziale.get(parziale.size()-1).getDataInizio().getYear()-parziale.get(1).getDataInizio().getYear())>anni)
-			return false;
+		
+		if (parziale.size()>=2) {
+		if ((parziale.get(parziale.size()-1).getDataInizio().getYear()-parziale.get(0).getDataInizio().getYear())>anni)
+			return false;}
 		for (PowerOutage p: parziale) {
-			sum+= p.getOreDisservizio()+ prova.getOreDisservizio();
+			sum+= p.getOreDisservizio();
 		}
 		if (sum>ore)
 			return false;

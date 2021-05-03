@@ -47,9 +47,8 @@ public class FXMLController {
     	Integer ore = Integer.parseInt(txtHours.getText());
     	
     	List<PowerOutage> listaP = model.trovaSequenza(years, ore, cmbNerc.getValue().getValue());
-    	
+    	txtResult.appendText("Tot people affected: " + model.calcolaTot(listaP) + "\n");
     	for (PowerOutage p: listaP) {
-    		
     		txtResult.appendText(p.toString()+"\n");
     	}
     }
