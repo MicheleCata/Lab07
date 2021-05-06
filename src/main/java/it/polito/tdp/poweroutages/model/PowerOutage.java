@@ -1,6 +1,7 @@
 package it.polito.tdp.poweroutages.model;
 
 import java.time.LocalDateTime;
+import java.time.temporal.ChronoUnit;
 
 public class PowerOutage {
 	
@@ -58,11 +59,11 @@ public class PowerOutage {
 		this.dataFine = dataFine;
 	}
 
-	public Integer getOreDisservizio() {
+	public Long getOreDisservizio() {
 		
-		Integer durata = dataFine.getHour()-dataInizio.getHour();
+		LocalDateTime tempDateTime= LocalDateTime.from(dataInizio);
 		
-		return durata;
+		return tempDateTime.until(dataFine, ChronoUnit.HOURS);
 	}
 	
 	public String toString() {
